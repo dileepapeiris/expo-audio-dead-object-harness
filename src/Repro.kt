@@ -12,4 +12,11 @@ fun main() {
   recorder.deadAfterReads = 3
   Thread.sleep(200)
 
+  // By now read() has returned ERROR_DEAD_OBJECT. Watch what the capture loop does next.
+  val callsAtDeath = recorder.readCalls
+  Thread.sleep(300)
+  val extraReads = recorder.readCalls - callsAtDeath
+  val statuses = stream.events.filter { it.first == "audioStreamStatus" }.map { (it.second as Map<*, *>)["isStreaming"] }
+  val buffers = stream.events.count { it.first == "audioStreamBuffer" }
+
 }
