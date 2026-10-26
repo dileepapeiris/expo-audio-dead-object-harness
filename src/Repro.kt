@@ -23,4 +23,8 @@ fun main() {
   println("isStreaming after the dead object: ${stream.isStreaming}")
   println("recorder released: ${recorder.released}")
   println("status events: $statuses, buffer events: $buffers")
+  val stopped = extraReads == 0 && !stream.isStreaming && statuses.lastOrNull() == false && recorder.released
+  println(if (stopped) "PASS: the stream stopped after ERROR_DEAD_OBJECT" else "FAIL: the stream keeps running after ERROR_DEAD_OBJECT")
+  stream.stop()
+  kotlin.system.exitProcess(if (stopped) 0 else 1)
 }
