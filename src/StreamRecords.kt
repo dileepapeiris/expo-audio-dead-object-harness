@@ -21,3 +21,13 @@ enum class AudioStreamFileFormat(val value: String) : Enumerable {
   val fileExtension: String get() = value
 }
 
+@OptimizedRecord
+class AudioStreamFileRecordingResult : Record {
+  @Field var uri: URL? = null
+  @Field var duration: Double = 0.0
+  @Field var size: Long = 0L
+  @Field var sampleRate: Int = 0
+  @Field var channels: Int = 0
+  @Field var encoding: AudioStreamEncoding = AudioStreamEncoding.FLOAT32
+}
+
