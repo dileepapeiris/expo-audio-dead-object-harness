@@ -12,3 +12,13 @@ three reads and `ERROR_DEAD_OBJECT` from then on.
 Expected: the loop stops reading the dead recorder, `isStreaming` becomes `false`, a status event
 with `isStreaming: false` is emitted, and the recorder is released.
 
+Result on 10/26/26 with the expo-audio 58.0.10 sources from `main`:
+
+| What | Observed |
+| --- | --- |
+| `read()` calls in the 300 ms after the dead object | 13 |
+| `isStreaming` | still `true` |
+| recorder released | no |
+| status events | `[true]`, no `false` |
+
+The loop keeps polling the invalid recorder and nothing tells the app that capture stopped.
