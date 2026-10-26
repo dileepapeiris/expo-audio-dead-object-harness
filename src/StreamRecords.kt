@@ -16,3 +16,8 @@ class AudioStreamOptions : Record {
   @Field var encoding: AudioStreamEncoding = AudioStreamEncoding.FLOAT32
 }
 
+enum class AudioStreamFileFormat(val value: String) : Enumerable {
+  WAV("wav"), PCM("pcm");
+  val fileExtension: String get() = value
+}
+
