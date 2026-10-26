@@ -19,4 +19,8 @@ fun main() {
   val statuses = stream.events.filter { it.first == "audioStreamStatus" }.map { (it.second as Map<*, *>)["isStreaming"] }
   val buffers = stream.events.count { it.first == "audioStreamBuffer" }
 
+  println("read() calls in the 300 ms after ERROR_DEAD_OBJECT: $extraReads")
+  println("isStreaming after the dead object: ${stream.isStreaming}")
+  println("recorder released: ${recorder.released}")
+  println("status events: $statuses, buffer events: $buffers")
 }
