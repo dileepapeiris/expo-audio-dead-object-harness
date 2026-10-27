@@ -4,7 +4,10 @@ package expo.modules.kotlin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
-class JsLogger { fun warn(message: String, cause: Throwable? = null) { println("[jsLogger.warn] $message") } }
+class JsLogger {
+  val warnings = java.util.concurrent.CopyOnWriteArrayList<String>()
+  fun warn(message: String, cause: Throwable? = null) { warnings += message; println("[jsLogger.warn] $message") }
+}
 
 open class AppContext {
   // Unconfined so queued emits run right away in the harness.
