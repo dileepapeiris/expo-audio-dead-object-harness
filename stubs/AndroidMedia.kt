@@ -19,11 +19,13 @@ open class AudioRecord(audioSource: Int, sampleRate: Int, channelConfig: Int, au
     const val READ_BLOCKING = 0
     const val ERROR = -1
     const val ERROR_BAD_VALUE = -2
+    const val ERROR_INVALID_OPERATION = -3
     const val ERROR_DEAD_OBJECT = -6
     @JvmStatic fun getMinBufferSize(sampleRate: Int, channelConfig: Int, audioFormat: Int): Int = 4096
     @Volatile var lastInstance: AudioRecord? = null
+    val instances = java.util.concurrent.CopyOnWriteArrayList<AudioRecord>()
   }
-  init { lastInstance = this }
+  init { lastInstance = this; instances += this }
   var throwOnStop = false
   @Volatile var released = false
   var stopCalls = 0
@@ -37,9 +39,13 @@ open class AudioRecord(audioSource: Int, sampleRate: Int, channelConfig: Int, au
     if (throwOnStop) throw IllegalStateException("stop() called on an uninitialized AudioRecord.")
   }
   open fun release() { released = true }
+  /** How long a read() blocks, like a real blocking read of one buffer. */
+  @Volatile var readMillis = 20L
   open fun read(buffer: ByteBuffer, sizeInBytes: Int, readMode: Int): Int {
-    Thread.sleep(20)
+    Thread.sleep(readMillis)
     readCalls += 1
+    // A released recorder answers every read with ERROR_INVALID_OPERATION, like the platform.
+    if (released) return ERROR_INVALID_OPERATION
     if (readCalls > deadAfterReads) return ERROR_DEAD_OBJECT
     val n = minOf(64, sizeInBytes)
     for (i in 0 until n) buffer.put(i, 0)
